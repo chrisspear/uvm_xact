@@ -1,15 +1,6 @@
 // UVM sequence item example with a combination of field macros and do_methods
 
-// This class is a dummy in the initial version
-class tx_payload extends uvm_sequence_item;
-  `uvm_object_utils(tx_payload)
-  function new(string name="tx_payload");
-    super.new(name);
-  endfunction
-endclass
-
-
-// This is the transaction
+// This is the transaction class
 class tx_item extends uvm_sequence_item;
   `uvm_object_utils(tx_item)
   function new(string name="tx_item");
@@ -17,7 +8,6 @@ class tx_item extends uvm_sequence_item;
   endfunction
   rand logic [31:0] src, dst;
   rand command_t    cmd;
-  rand tx_payload   pay_h;
   logic [31:0] result;
   logic [99:0] temp; // Not copied or compared
 
@@ -30,7 +20,6 @@ class tx_item extends uvm_sequence_item;
     this.dst = rhs_.dst;
     this.cmd = rhs_.cmd;
     this.result = rhs_.result;
-    this.pay_h = rhs_.pay_h;
   endfunction
 
 
@@ -52,7 +41,5 @@ class tx_item extends uvm_sequence_item;
   virtual function void do_print(uvm_printer printer);
     printer.m_string = convert2string();
   endfunction
-    
-
 
 endclass
