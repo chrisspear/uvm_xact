@@ -1,45 +1,40 @@
 // UVM sequence item example with a combination of field macros and do_methods
+// This needs a special do_compare as no compare is done when cmd==NOOP
 
 // This is the transaction class
 class tx_item extends uvm_sequence_item;
-  `uvm_object_utils(tx_item)
   function new(string name="tx_item");
     super.new(name);
   endfunction
+
   rand logic [31:0] src, dst;
   rand command_t    cmd;
-  logic [31:0] result;
-  logic [99:0] temp; // Not copied or compared
+  logic [31:0]      result;
 
-
-  virtual function void do_copy(uvm_object rhs);
-    tx_item rhs_;
-    if (!$cast(rhs_, rhs)) $fatal(0, "$cast failed");
-    super.do_copy(rhs);
-    this.src = rhs_.src;
-    this.dst = rhs_.dst;
-    this.cmd = rhs_.cmd;
-    this.result = rhs_.result;
-  endfunction
+  // This block is almost the same as fm.svh, just with "| UVM_NOCOMPARE:
+  `uvm_object_utils_begin(tx_item)
+    `uvm_field_int(src, UVM_ALL_ON | UVM_NOCOMPARE)
+    `uvm_field_int(dst, UVM_ALL_ON | UVM_NOCOMPARE)
+    `uvm_field_enum(command_t, cmd, UVM_ALL_ON | UVM_NOCOMPARE)
+    `uvm_field_int(result, UVM_ALL_ON | UVM_NOCOMPARE)
+  `uvm_object_utils_end
 
 
   virtual function bit do_compare(uvm_object rhs, uvm_comparer comparer);
     tx_item rhs_;
     if (!$cast(rhs_, rhs)) $fatal(0, "$cast failed");
-    return (super.do_compare(rhs, comparer) &&
-	    comparer.compare_field("src", this.src, rhs_.src, 32) &&
-	    comparer.compare_field("dst", this.dst, rhs_.dst, 32) &&
-	    comparer.compare_field("cmd", this.cmd, rhs_.cmd, 2, UVM_ENUM) &&
-	    comparer.compare_field("result", this.result, rhs_.result, 32));
-  endfunction
 
-  virtual function string convert2string();
-    return $sformatf("tx_item: cmd=%s(%0x) src=0x%0x dst=0x%0x result=0x%0x",
-		     cmd.name(), cmd, src, dst, result);
-  endfunction
-
-  virtual function void do_print(uvm_printer printer);
-    printer.m_string = convert2string();
+    // For NOOP command, always return success
+    if (cmd == NOOP)
+      do_compare = 1;
+    else begin
+      // This is an example of calling the verbose compare methods
+      do_compare = (super.do_compare(rhs, comparer) &&
+		    comparer.compare_field("src", this.src, rhs_.src, 32) &&
+		    comparer.compare_field("dst", this.dst, rhs_.dst, 32) &&
+		    comparer.compare_field("cmd", this.cmd, rhs_.cmd, 2, UVM_ENUM) &&
+		    comparer.compare_field("result", this.result, rhs_.result, 32));
+    end
   endfunction
 
 endclass
