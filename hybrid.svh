@@ -1,7 +1,7 @@
 // UVM sequence item example with a combination of field macros and do_methods
 // This needs a special do_compare as no compare is done when cmd==NOOP
 
-// This is the transaction class
+// A transaction class defined with a hybrid style
 class tx_item extends uvm_sequence_item;
   function new(string name="tx_item");
     super.new(name);
