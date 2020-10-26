@@ -1,6 +1,6 @@
 // UVM sequence item example with do methods
 
-// This is the transaction class
+// A transaction class defined with the do method style
 class tx_item extends uvm_sequence_item;
   `uvm_object_utils(tx_item)
   function new(string name="tx_item");
@@ -38,15 +38,9 @@ class tx_item extends uvm_sequence_item;
   endfunction
 
 
-  virtual function string convert2string();
-    return $sformatf("tx_item: cmd=%s(%0x) src=0x%0x dst=0x%0x result=0x%0x",
-		     cmd.name(), cmd, src, dst, result);
-  endfunction
-
-
-  // For compatibility with print(), sprint()
   virtual function void do_print(uvm_printer printer);
-    printer.m_string = convert2string();
+    printer.m_string = $sformatf("tx_item: cmd=%s(%0x) src=0x%0x dst=0x%0x result=0x%0x",
+				 cmd.name(), cmd, src, dst, result);
   endfunction
 
 endclass

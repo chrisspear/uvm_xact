@@ -1,7 +1,7 @@
 // UVM sequence item example with just field macros
 // This gives false miscompares no compare should be done when cmd==NOOP
 
-// This is the transaction class
+// A transaction class defined with the field macro style
 class tx_item extends uvm_sequence_item;
   function new(string name="tx_item");
     super.new(name);
